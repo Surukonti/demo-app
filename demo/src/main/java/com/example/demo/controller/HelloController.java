@@ -13,6 +13,7 @@ public class HelloController {
     @Autowired
     private DataRepository repository;
 
+
     @PostMapping("/save")
     public DataRequest saveData(@RequestBody DataRequest request) {
         DataRequest saved = repository.save(request);

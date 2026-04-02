@@ -19,8 +19,10 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Fix permissions
-        run: chmod +x demo/mvnw
+      - name: Make mvnw executable
+        working-directory: demo
+        run: chmod +x mvnw
 
       - name: Build with Maven
-        run: ./demo/mvnw clean package -DskipTests
+        working-directory: demo
+        run: ./mvnw clean package -DskipTests

@@ -13,11 +13,16 @@ public class HelloController {
     @Autowired
     private DataRepository repository;
 
-
     @PostMapping("/save")
     public DataRequest saveData(@RequestBody DataRequest request) {
-        DataRequest saved = repository.save(request);
-        System.out.println("Saved to DB: " + saved.getId());
-        return saved;
+        return request; // just return input
     }
+
+
+   // @PostMapping("/save")
+  //  public DataRequest saveData(@RequestBody DataRequest request) {
+   //     DataRequest saved = repository.save(request);
+     //   System.out.println("Saved to DB: " + saved.getId());
+    //    return saved;
+    //}
 }

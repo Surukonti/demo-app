@@ -26,3 +26,6 @@ jobs:
       - name: Build with Maven
         working-directory: demo
         run: ./mvnw clean package -DskipTests
+
+      - name: Build Docker image
+        run: docker build -t demo-app .

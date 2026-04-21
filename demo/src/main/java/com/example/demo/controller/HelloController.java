@@ -34,10 +34,15 @@ public class HelloController {
         List<Word> words = repository.findAll();
 
         if (words.isEmpty()) {
-            throw new RuntimeException("No words in database");
+            throw new RuntimeException("No data found in database");
         }
 
         return words.get(new Random().nextInt(words.size()));
+    }
+
+    @GetMapping("/debug/all")
+    public List<Word> debugAll() {
+        return repository.findAll();
     }
 
     @GetMapping("/debug/messages")

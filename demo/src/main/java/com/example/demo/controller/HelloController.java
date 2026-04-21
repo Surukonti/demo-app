@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://german-ui.onrender.com")
 @RestController
 @RequestMapping("/api")
 public class HelloController {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 @CrossOrigin(origins = "https://german-ui.onrender.com")
 @RestController
@@ -26,8 +27,8 @@ public class HelloController {
 
 
     @PostMapping("/save")
-    public Word saveData(@RequestBody Word request) {
-        return repository.save(request);
+    public List<Word> saveData(@RequestBody List<Word> request) {
+        return repository.saveAll(request);
     }
     @GetMapping("/word/random")
     public Word getRandomWord() {
@@ -45,10 +46,6 @@ public class HelloController {
         return repository.findAll();
     }
 
-    @GetMapping("/debug/messages")
-    public Collection<Word> all() {
-        return repository.findAll();
-    }
     @GetMapping("/debug/db")
     public String getDbName() {
         return mongoTemplate.getDb().getName();

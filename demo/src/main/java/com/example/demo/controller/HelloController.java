@@ -54,9 +54,9 @@ public class HelloController {
         return mongoTemplate.getDb().getName();
     }
 
-    @GetMapping("/env-check")
-    public String checkEnv() {
-        return System.getenv("SPRING_DATA_MONGODB_URI");
+    @GetMapping("/word/all")
+    public List<Word> getAllWords() {
+        return repository.findAll();
     }
 
 

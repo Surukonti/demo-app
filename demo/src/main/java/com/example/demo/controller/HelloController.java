@@ -54,8 +54,8 @@ public class HelloController {
         return mongoTemplate.getDb().getName();
     }
 
-    @GetMapping("/debug/env")
-    public String env() {
+    @GetMapping("/env-check")
+    public String checkEnv() {
         return System.getenv("SPRING_DATA_MONGODB_URI");
     }
 

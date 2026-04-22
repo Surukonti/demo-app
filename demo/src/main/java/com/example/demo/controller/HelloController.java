@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-@CrossOrigin(origins = "https://german-ui.onrender.com")
+@CrossOrigin(origins = "https://rams-langui.onrender.com")
 @RestController
 @RequestMapping("/api")
 public class HelloController {

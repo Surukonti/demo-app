@@ -30,16 +30,21 @@ public class HelloController {
     public List<Word> saveData(@RequestBody List<Word> request) {
         return repository.saveAll(request);
     }
+
     @GetMapping("/word/random")
     public Word getRandomWord() {
-        List<Word> words = repository.findAll();
-
-        if (words.isEmpty()) {
-            throw new RuntimeException("No data found in database");
-        }
-
-        return words.get(new Random().nextInt(words.size()));
+        return repository.findRandomWord();
     }
+//    @GetMapping("/word/random")
+//    public Word getRandomWord() {
+//        List<Word> words = repository.findAll();
+//
+//        if (words.isEmpty()) {
+//            throw new RuntimeException("No data found in database");
+//        }
+//
+//        return words.get(new Random().nextInt(words.size()));
+//    }
 
     @GetMapping("/debug/all")
     public List<Word> debugAll() {

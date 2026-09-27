@@ -5,14 +5,88 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "words")
 public class Word {
-    private String id;
 
-    public String getGerman() {
-        return german;
+    @Id
+    private String id;
+    private String german;
+    private String english;
+    private String arabic;
+    private String ukrainian;
+    private String russian;
+    private String turkish;
+    private String level;
+    private String article;
+    private String plural;
+    private String category;
+    private String example;
+    private String exampleEnglish;
+    private String partOfSpeech;
+    private String forms;
+    private String present;
+    private String preterite;
+    private String perfect;
+
+    public String getPresent() {
+        return present;
     }
 
-    public void setGerman(String german) {
-        this.german = german;
+    public void setPresent(String present) {
+        this.present = present;
+    }
+
+    public String getPreterite() {
+        return preterite;
+    }
+
+    public void setPreterite(String preterite) {
+        this.preterite = preterite;
+    }
+
+    public String getPerfect() {
+        return perfect;
+    }
+
+    public void setPerfect(String perfect) {
+        this.perfect = perfect;
+    }
+
+    public String getArabic() {
+        return arabic;
+    }
+
+    public void setArabic(String arabic) {
+        this.arabic = arabic;
+    }
+
+    public String getUkrainian() {
+        return ukrainian;
+    }
+
+    public void setUkrainian(String ukrainian) {
+        this.ukrainian = ukrainian;
+    }
+
+    public String getRussian() {
+        return russian;
+    }
+
+    public void setRussian(String russian) {
+        this.russian = russian;
+    }
+
+    public String getTurkish() {
+        return turkish;
+    }
+
+    public void setTurkish(String turkish) {
+        this.turkish = turkish;
+    }
+    public String getForms() {
+        return forms;
+    }
+
+    public void setForms(String forms) {
+        this.forms = forms;
     }
 
     public String getId() {
@@ -23,6 +97,14 @@ public class Word {
         this.id = id;
     }
 
+    public String getGerman() {
+        return german;
+    }
+
+    public void setGerman(String german) {
+        this.german = german;
+    }
+
     public String getEnglish() {
         return english;
     }
@@ -31,7 +113,59 @@ public class Word {
         this.english = english;
     }
 
-    private String german;
-    private String english;
+    public String getLevel() {
+        return level;
+    }
 
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public String getArticle() {
+        return article;
+    }
+
+    public void setArticle(String article) {
+        this.article = article;
+    }
+
+    public String getPlural() {
+        return plural;
+    }
+
+    public void setPlural(String plural) {
+        this.plural = plural;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getExample() {
+        return example;
+    }
+
+    public void setExample(String example) {
+        this.example = example;
+    }
+
+    public String getExampleEnglish() {
+        return exampleEnglish;
+    }
+
+    public void setExampleEnglish(String exampleEnglish) {
+        this.exampleEnglish = exampleEnglish;
+    }
+
+    public String getPartOfSpeech() {
+        return partOfSpeech;
+    }
+
+    public void setPartOfSpeech(String partOfSpeech) {
+        this.partOfSpeech = partOfSpeech;
+    }
 }

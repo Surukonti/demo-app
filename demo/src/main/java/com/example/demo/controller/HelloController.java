@@ -4,6 +4,8 @@ import com.example.demo.model.Word;
 import com.example.demo.repository.WordRepository;
 import com.mongodb.client.MongoClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,5 +70,22 @@ public class HelloController {
     @GetMapping("/debug/real-uri")
     public String getRealUri() {
         return mongoClient.getClusterDescription().getClusterSettings().getHosts().toString();
+    }
+
+    @GetMapping("/word/level/{level}")
+    public List<Word> getByLevel(@PathVariable String level) {
+        return repository.findByLevel(level);
+    }
+
+    @GetMapping("/word/search")
+    public List<Word> search(@RequestParam String german) {
+        return repository.findByGermanContainingIgnoreCase(german);
+    }
+    @GetMapping("/word/level/{level}/page")
+    public Page<Word> getWordsByLevel(
+            @PathVariable String level,
+            Pageable pageable) {
+
+        return repository.findByLevel(level, pageable);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface WordRepository extends MongoRepository<Word, String> {
-    @Aggregation(pipeline = { "{ $sample: { size: 1 } }" })
+    @Aggregation(pipeline = {"{ $sample: { size: 1 } }"})
     Word findRandomWord();
 
     List<Word> findByGerman(String german);

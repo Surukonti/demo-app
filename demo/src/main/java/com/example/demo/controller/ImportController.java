@@ -12,6 +12,7 @@ public class ImportController {
     public ImportController(WordhoardImporter importer) {
         this.importer = importer;
     }
+
     @PostMapping
     public String importWords(
             @RequestParam(defaultValue = "B1") String level,
@@ -22,5 +23,11 @@ public class ImportController {
         return "Import started for " + limit + " " + level + " words.";
     }
 
+    @PostMapping("/word")
+    public String importSingleWord(@RequestParam String word) {
 
+        importer.importSingleWord(word);
+
+        return "Import started for word: " + word;
+    }
 }

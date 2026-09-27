@@ -23,7 +23,7 @@ public class ImportController {
         return "Import started for " + limit + " " + level + " words.";
     }
 
-    @PostMapping("/word")
+    @GetMapping("/word")
     public String importSingleWord(@RequestParam String word) {
 
         importer.importSingleWord(word);

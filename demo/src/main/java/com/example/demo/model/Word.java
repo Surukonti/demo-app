@@ -67,6 +67,15 @@ public class Word {
     private String present;
     private String preterite;
     private String perfect;
+    private boolean meaningsImported = false;
+
+    public boolean isMeaningsImported() {
+        return meaningsImported;
+    }
+
+    public void setMeaningsImported(boolean meaningsImported) {
+        this.meaningsImported = meaningsImported;
+    }
 
 
     public String getId() {

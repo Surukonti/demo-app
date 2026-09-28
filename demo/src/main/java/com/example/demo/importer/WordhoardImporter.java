@@ -704,6 +704,10 @@ public class WordhoardImporter {
 
                 Word word = existingWords.get(0);
 
+                if (word.isMeaningsImported()) {
+                    continue;
+                }
+
                 JsonNode translationRoot =
                         getJson(client, german, "/translations", mapper);
 
@@ -744,6 +748,7 @@ public class WordhoardImporter {
                     word.setTurkishMeanings(turkishMeanings);
                 }
 
+                word.setMeaningsImported(true);
                 repository.save(word);
 
                 processed++;

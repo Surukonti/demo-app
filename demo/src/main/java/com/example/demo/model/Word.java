@@ -15,49 +15,38 @@ public class Word {
 
     private String english;
 
+    public String getDari() {
+        return dari;
+    }
+
+    public void setDari(String dari) {
+        this.dari = dari;
+    }
+
+    public List<String> getDariMeanings() {
+        return dariMeanings;
+    }
+
+    public void setDariMeanings(List<String> dariMeanings) {
+        this.dariMeanings = dariMeanings;
+    }
+
+    private String dari;
+    private List<String> dariMeanings;
+
     private List<String> englishMeanings;
     private List<String> arabicMeanings;
     private List<String> ukrainianMeanings;
 
-    public List<String> getRussianMeanings() {
-        return russianMeanings;
-    }
 
-    public void setRussianMeanings(List<String> russianMeanings) {
-        this.russianMeanings = russianMeanings;
-    }
-
-    public List<String> getArabicMeanings() {
-        return arabicMeanings;
-    }
-
-    public void setArabicMeanings(List<String> arabicMeanings) {
-        this.arabicMeanings = arabicMeanings;
-    }
-
-    public List<String> getUkrainianMeanings() {
-        return ukrainianMeanings;
-    }
-
-    public void setUkrainianMeanings(List<String> ukrainianMeanings) {
-        this.ukrainianMeanings = ukrainianMeanings;
-    }
-
-    public List<String> getTurkishMeanings() {
-        return turkishMeanings;
-    }
-
-    public void setTurkishMeanings(List<String> turkishMeanings) {
-        this.turkishMeanings = turkishMeanings;
-    }
-
-    private List<String> russianMeanings;
     private List<String> turkishMeanings;
 
     private String arabic;
     private String ukrainian;
-    private String russian;
+
     private String turkish;
+
+
 
     private String level;
     private String article;
@@ -134,15 +123,6 @@ public class Word {
     }
 
 
-    public String getRussian() {
-        return russian;
-    }
-
-    public void setRussian(String russian) {
-        this.russian = russian;
-    }
-
-
     public String getTurkish() {
         return turkish;
     }
@@ -158,6 +138,32 @@ public class Word {
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+
+
+    public List<String> getArabicMeanings() {
+        return arabicMeanings;
+    }
+
+    public void setArabicMeanings(List<String> arabicMeanings) {
+        this.arabicMeanings = arabicMeanings;
+    }
+
+    public List<String> getUkrainianMeanings() {
+        return ukrainianMeanings;
+    }
+
+    public void setUkrainianMeanings(List<String> ukrainianMeanings) {
+        this.ukrainianMeanings = ukrainianMeanings;
+    }
+
+    public List<String> getTurkishMeanings() {
+        return turkishMeanings;
+    }
+
+    public void setTurkishMeanings(List<String> turkishMeanings) {
+        this.turkishMeanings = turkishMeanings;
     }
 
 

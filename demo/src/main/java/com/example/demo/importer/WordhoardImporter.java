@@ -211,7 +211,8 @@ public class WordhoardImporter {
 
             List<String> ukrainianMeanings = findAllTranslations(translationRoot, "uk");
 
-            List<String> russianMeanings = findAllTranslations(translationRoot, "ru");
+            List<String> dariMeanings = new ArrayList<>();
+
 
             List<String> turkishMeanings = findAllTranslations(translationRoot, "tr");
 
@@ -222,9 +223,10 @@ public class WordhoardImporter {
 
             String ukrainian = firstOrNull(ukrainianMeanings);
 
-            String russian = firstOrNull(russianMeanings);
 
             String turkish = firstOrNull(turkishMeanings);
+            String dari = null;
+
 
 
             System.out.println("WORD: " + german);
@@ -235,7 +237,7 @@ public class WordhoardImporter {
 
             System.out.println("Ukrainian meanings: " + ukrainianMeanings);
 
-            System.out.println("Russian meanings: " + russianMeanings);
+            System.out.println("Russian meanings: " + dariMeanings);
 
             System.out.println("Turkish meanings: " + turkishMeanings);
 
@@ -253,13 +255,15 @@ public class WordhoardImporter {
 
             word.setArabic(arabic);
             word.setUkrainian(ukrainian);
-            word.setRussian(russian);
+
             word.setTurkish(turkish);
             word.setArabicMeanings(arabicMeanings);
             word.setUkrainianMeanings(ukrainianMeanings);
-            word.setRussianMeanings(russianMeanings);
+
             word.setTurkishMeanings(turkishMeanings);
 
+            word.setDari(dari);
+            word.setDariMeanings(dariMeanings);
 
             /*
              * ---------------------------------------------------------
@@ -646,5 +650,126 @@ public class WordhoardImporter {
 
 
         return values.get(0);
+    }
+
+    public void importMeanings(String targetLevel, int limit) {
+
+        String fileName = "data/wordhoard-de.csv";
+
+        try {
+
+            InputStream inputStream =
+                    getClass().getClassLoader().getResourceAsStream(fileName);
+
+            if (inputStream == null) {
+                System.out.println("CSV file not found!");
+                return;
+            }
+
+            BufferedReader reader =
+                    new BufferedReader(
+                            new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+
+            CSVParser csvParser =
+                    CSVFormat.DEFAULT.builder()
+                            .setHeader()
+                            .setSkipHeaderRecord(true)
+                            .build()
+                            .parse(reader);
+
+            HttpClient client = HttpClient.newHttpClient();
+            ObjectMapper mapper = new ObjectMapper();
+
+            int processed = 0;
+
+            for (CSVRecord record : csvParser) {
+
+                if (processed >= limit) {
+                    break;
+                }
+
+                String level = record.get("cefr_estimate");
+
+                if (!targetLevel.equals(level)) {
+                    continue;
+                }
+
+                String german = record.get("lemma");
+
+                var existingWords = repository.findByGerman(german);
+
+                if (existingWords.isEmpty()) {
+                    continue;
+                }
+
+                Word word = existingWords.get(0);
+
+                JsonNode translationRoot =
+                        getJson(client, german, "/translations", mapper);
+
+                if (translationRoot == null) {
+                    System.out.println("Translation failed: " + german);
+                    continue;
+                }
+
+                List<String> englishMeanings =
+                        findAllTranslations(translationRoot, "en");
+
+                List<String> arabicMeanings =
+                        findAllTranslations(translationRoot, "ar");
+
+                List<String> ukrainianMeanings =
+                        findAllTranslations(translationRoot, "uk");
+
+                List<String> turkishMeanings =
+                        findAllTranslations(translationRoot, "tr");
+
+                if (!englishMeanings.isEmpty()) {
+                    word.setEnglish(englishMeanings.get(0));
+                    word.setEnglishMeanings(englishMeanings);
+                }
+
+                if (!arabicMeanings.isEmpty()) {
+                    word.setArabic(arabicMeanings.get(0));
+                    word.setArabicMeanings(arabicMeanings);
+                }
+
+                if (!ukrainianMeanings.isEmpty()) {
+                    word.setUkrainian(ukrainianMeanings.get(0));
+                    word.setUkrainianMeanings(ukrainianMeanings);
+                }
+
+                if (!turkishMeanings.isEmpty()) {
+                    word.setTurkish(turkishMeanings.get(0));
+                    word.setTurkishMeanings(turkishMeanings);
+                }
+
+                repository.save(word);
+
+                processed++;
+
+                System.out.println(
+                        "MEANINGS SAVED [" + processed + "]: "
+                                + german
+                                + " -> "
+                                + englishMeanings);
+            }
+
+            csvParser.close();
+
+            System.out.println(
+                    "========================================");
+            System.out.println(
+                    "MEANINGS IMPORT COMPLETED: "
+                            + processed
+                            + " "
+                            + targetLevel
+                            + " words");
+            System.out.println(
+                    "========================================");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

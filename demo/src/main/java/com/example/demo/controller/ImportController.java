@@ -18,14 +18,9 @@ public class ImportController {
             @RequestParam(defaultValue = "B1") String level,
             @RequestParam(defaultValue = "10") int limit) {
 
-        Thread thread = new Thread(() -> {
-            importer.importWords(level, limit);
-        });
+        importer.importWords(level, limit);
 
-        thread.setDaemon(true);
-        thread.start();
-
-        return "Import started in background for " + limit + " " + level + " words.";
+        return "Import started for " + limit + " " + level + " words.";
     }
 
     @GetMapping("/word")

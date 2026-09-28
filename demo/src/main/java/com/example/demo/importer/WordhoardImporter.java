@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -32,7 +33,7 @@ public class WordhoardImporter {
         this.repository = repository;
     }
 
-
+    @Async
     public void importWords(String targetLevel, int limit) {
 
         String fileName = "data/wordhoard-de.csv";
@@ -82,13 +83,6 @@ public class WordhoardImporter {
             e.printStackTrace();
         }
     }
-
-
-    /*
-     * =========================================================
-     * IMPORT ONE SPECIFIC WORD
-     * =========================================================
-     */
 
     public void importSingleWord(String targetWord) {
 

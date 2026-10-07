@@ -25,28 +25,26 @@ public class RandomWordController {
     @GetMapping("/vocabulary")
     public Word randomVocabulary(HttpSession session) {
 
-        List<Word> b2Words = repository.findAll()
-                .stream()
-                .filter(word -> "B2".equalsIgnoreCase(word.getLevel()))
-                .toList();
-
-        if (b2Words.isEmpty()) {
-            throw new RuntimeException("No B2 vocabulary found");
-        }
-
         Set<String> used = getUsedWords(session, "vocabulary");
 
-        List<Word> available = b2Words.stream()
-                .filter(word -> !used.contains(word.getGerman().toLowerCase()))
-                .toList();
+        Word selected = repository.findRandomByLevelExcluding(
+                "B2",
+                new ArrayList<>(used)
+        );
 
-        // Start a fresh cycle when all B2 words have been shown.
-        if (available.isEmpty()) {
+        // Start a fresh cycle when all B2 words have been shown
+        if (selected == null) {
             used.clear();
-            available = b2Words;
+
+            selected = repository.findRandomByLevelExcluding(
+                    "B2",
+                    List.of()
+            );
         }
 
-        Word selected = randomWord(available);
+        if (selected == null) {
+            throw new RuntimeException("No B2 vocabulary found");
+        }
 
         used.add(selected.getGerman().toLowerCase());
 

@@ -19,4 +19,10 @@ public interface WordRepository extends MongoRepository<Word, String> {
     List<Word> findByGermanContainingIgnoreCase(String german);
 
     Page<Word> findByLevel(String level, Pageable pageable);
+
+    @Aggregation(pipeline = {
+            "{ $match: { level: ?0, german: { $exists: true, $nin: ?1 } } }",
+            "{ $sample: { size: 1 } }"
+    })
+    Word findRandomByLevelExcluding(String level, List<String> excludedGerman);
 }

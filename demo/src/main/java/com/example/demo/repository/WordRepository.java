@@ -25,4 +25,11 @@ public interface WordRepository extends MongoRepository<Word, String> {
             "{ $sample: { size: 1 } }"
     })
     Word findRandomByLevelExcluding(String level, List<String> excludedGerman);
+
+    @Aggregation(pipeline = {
+            "{ $match: { german: { $exists: true, $ne: null, $nin: ?0 } } }",
+            "{ $match: { $expr: { $gte: [ { $strLenCP: '$german' }, 3 ] } } }",
+            "{ $sample: { size: 1 } }"
+    })
+    Word findRandomPuzzleWordExcluding(List<String> excludedGerman);
 }

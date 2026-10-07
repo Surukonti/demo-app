@@ -54,34 +54,28 @@ public class RandomWordController {
     @GetMapping("/puzzle")
     public Map<String, String> randomPuzzle(HttpSession session) {
 
-        List<Word> words = repository.findAll()
-                .stream()
-                .filter(word -> word.getGerman() != null)
-                .filter(word -> word.getGerman().length() >= 3)
-                .toList();
+        Set<String> used = getUsedWords(session, "puzzle");
 
-        if (words.isEmpty()) {
+        Word selected = repository.findRandomPuzzleWordExcluding(
+                new ArrayList<>(used)
+        );
+
+        // Start a fresh cycle when all eligible words have been shown.
+        if (selected == null) {
+            used.clear();
+
+            selected = repository.findRandomPuzzleWordExcluding(
+                    List.of()
+            );
+        }
+
+        if (selected == null) {
             throw new RuntimeException("No puzzle words found");
         }
 
-        Set<String> used = getUsedWords(session, "puzzle");
-
-        List<Word> available = words.stream()
-                .filter(word -> !used.contains(word.getGerman().toLowerCase()))
-                .toList();
-
-        if (available.isEmpty()) {
-            used.clear();
-            available = words;
-        }
-
-        Word selected = randomWord(available);
-
         used.add(selected.getGerman().toLowerCase());
 
-        return Map.of(
-                "german", selected.getGerman()
-        );
+        return Map.of("german", selected.getGerman());
     }
 
     @SuppressWarnings("unchecked")

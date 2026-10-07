@@ -120,10 +120,15 @@ public class GeminiChatService {
                     )
                     .build();
 
+            long start = System.currentTimeMillis();
+
             HttpResponse<String> response = httpClient.send(
                     httpRequest,
                     HttpResponse.BodyHandlers.ofString()
             );
+
+            System.out.println("Gemini chat API time: "
+                    + (System.currentTimeMillis() - start) + " ms");
 
             if (response.statusCode() / 100 != 2) {
                 throw new IllegalStateException(

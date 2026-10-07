@@ -17,6 +17,7 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class GeminiWordService {
@@ -29,6 +30,9 @@ public class GeminiWordService {
             "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent";
 
     private static final int MAX_ATTEMPTS = 3;
+
+    // Avoid paying for the same word/language combination repeatedly.
+    private final Map<String, AiWordResponse> cache = new ConcurrentHashMap<>();
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
@@ -47,6 +51,14 @@ public class GeminiWordService {
 
     public AiWordResponse getWord(AiWordRequest request) {
         validate(request);
+
+        String cacheKey = request.germanWord().trim().toLowerCase()
+                + "|" + request.targetLanguage();
+
+        AiWordResponse cached = cache.get(cacheKey);
+        if (cached != null) {
+            return cached;
+        }
 
         String prompt = buildPrompt(request);
         String requestBody = buildRequestBody(prompt);
@@ -67,7 +79,9 @@ public class GeminiWordService {
                 );
 
                 if (response.statusCode() / 100 == 2) {
-                    return parseResponse(response.body());
+                    AiWordResponse result = parseResponse(response.body());
+                    cache.put(cacheKey, result);
+                    return result;
                 }
 
                 if (response.statusCode() != 503 || attempt == MAX_ATTEMPTS) {
@@ -132,11 +146,13 @@ public class GeminiWordService {
 
             Rules:
             - Preserve the searched German word.
-            - Give the most useful translation(s) in the target language.
+            - Give the most useful primary translation in the target language.
+            - Give 3 to 6 useful, distinct meanings in the target language when applicable.
             - Identify the word type (for example: VERB, NOUN, ADJECTIVE, ADVERB).
             - For nouns, provide the German article and common plural when applicable.
-            - Provide exactly 3 natural example sentences.
+            - Provide exactly 3 natural example sentences suitable for a German learner.
             - Every example must contain both German and its translation into the target language.
+            - Keep the German example sentence unchanged; translate only the translation field.
             - If the word is a verb, provide infinitive, Präteritum and Perfekt, with both German forms and their meanings.
             - If it is not a verb, return empty strings for all verbForms fields.
             - Do not invent a verb form for a non-verb.
@@ -154,6 +170,10 @@ public class GeminiWordService {
                 "properties", Map.of(
                         "germanWord", Map.of("type", "STRING"),
                         "translation", Map.of("type", "STRING"),
+                        "meanings", Map.of(
+                                "type", "ARRAY",
+                                "items", Map.of("type", "STRING")
+                        ),
                         "targetLanguage", Map.of("type", "STRING"),
                         "wordType", Map.of("type", "STRING"),
                         "level", Map.of("type", "STRING"),

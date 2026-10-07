@@ -5,6 +5,7 @@ import java.util.List;
 public record AiWordResponse(
         String germanWord,
         String translation,
+        List<String> meanings,
         String targetLanguage,
         String wordType,
         String level,
@@ -16,8 +17,7 @@ public record AiWordResponse(
     public record ExampleSentence(
             String german,
             String translation
-    ) {
-    }
+    ) {}
 
     public record VerbForms(
             String infinitiveGerman,
@@ -26,6 +26,5 @@ public record AiWordResponse(
             String praeteritumTranslation,
             String perfektGerman,
             String perfektTranslation
-    ) {
-    }
+    ) {}
 }

@@ -22,7 +22,7 @@ import java.util.Set;
 public class GeminiWordService {
 
     private static final Set<String> SUPPORTED_LANGUAGES = Set.of(
-            "English", "Turkish", "Ukrainian", "Arabic"
+            "English", "Turkish", "Ukrainian", "Arabic", "Dari"
     );
 
     private static final String API_URL =

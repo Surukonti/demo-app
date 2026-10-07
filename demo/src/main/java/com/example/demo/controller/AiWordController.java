@@ -35,6 +35,11 @@ public class AiWordController {
         return ResponseEntity.ok(geminiWordService.getWord(request));
     }
 
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
+        return ResponseEntity.ok("UP");
+    }
+
     @PostMapping("/chat")
     public ResponseEntity<Map<String, String>> chat(
             @RequestBody ChatRequest request) {

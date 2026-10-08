@@ -7,12 +7,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -38,21 +41,28 @@ public class GeminiChatService {
         this.model = model;
     }
 
-    public String chat(ChatRequest request) {
+    public String chat(
+            ChatRequest request,
+            List<MultipartFile> images) {
 
         if (apiKey.isBlank()) {
             throw new IllegalStateException(
-                    "GEMINI_API_KEY is not configured"
-            );
+                    "GEMINI_API_KEY is not configured");
         }
 
-        if (request == null ||
-                request.getMessage() == null ||
-                request.getMessage().isBlank()) {
+        if (request == null) {
+            throw new IllegalArgumentException("request is required");
+        }
 
+        String message = request.getMessage() == null
+                ? ""
+                : request.getMessage().trim();
+
+        boolean hasImages = images != null && !images.isEmpty();
+
+        if (message.isBlank() && !hasImages) {
             throw new IllegalArgumentException(
-                    "message is required"
-            );
+                    "message or image is required");
         }
 
         String language = request.getLanguage();
@@ -65,20 +75,20 @@ public class GeminiChatService {
                 You are a helpful conversational AI assistant inside a German
                 language learning application.
 
-                The user may speak or type naturally.
+                The user may speak, type, or send images.
 
                 Understand what the user is asking and respond helpfully.
-                The user may ask for:
-                - translations
-                - meanings of German words
-                - German grammar explanations
-                - corrections
-                - example sentences
-                - language learning questions
-                - general questions
-                - normal conversation
 
-                Respond naturally, like a conversational assistant.
+                If an image is attached:
+                - Carefully inspect the image.
+                - Read any visible text.
+                - If the user asks for a translation, translate the visible
+                  text into the requested language.
+                - Explain the meaning when requested.
+                - If the user asks something else about the image, answer
+                  based on what you can see.
+                - Do not say that you cannot see the image if an image was
+                  actually provided.
 
                 Preferred response language: %s
 
@@ -92,19 +102,58 @@ public class GeminiChatService {
                 %s
                 """.formatted(
                 language,
-                request.getMessage().trim()
-        );
-
-        Map<String, Object> body = Map.of(
-                "contents", List.of(
-                        Map.of(
-                                "parts",
-                                List.of(Map.of("text", prompt))
-                        )
-                )
+                message.isBlank()
+                        ? "Please analyze the attached image(s) and help the user."
+                        : message
         );
 
         try {
+            List<Map<String, Object>> parts = new ArrayList<>();
+
+            // Add text prompt
+            parts.add(Map.of("text", prompt));
+
+            // Add images
+            if (hasImages) {
+                for (MultipartFile image : images) {
+
+                    if (image == null || image.isEmpty()) {
+                        continue;
+                    }
+
+                    String contentType = image.getContentType();
+
+                    if (contentType == null ||
+                            !contentType.startsWith("image/")) {
+                        continue;
+                    }
+
+                    String base64 =
+                            Base64.getEncoder()
+                                    .encodeToString(image.getBytes());
+
+                    parts.add(
+                            Map.of(
+                                    "inline_data",
+                                    Map.of(
+                                            "mime_type", contentType,
+                                            "data", base64
+                                    )
+                            )
+                    );
+                }
+            }
+
+            Map<String, Object> body = Map.of(
+                    "contents",
+                    List.of(
+                            Map.of(
+                                    "parts",
+                                    parts
+                            )
+                    )
+            );
+
             String requestBody =
                     objectMapper.writeValueAsString(body);
 
@@ -144,22 +193,19 @@ public class GeminiChatService {
             Thread.currentThread().interrupt();
 
             throw new IllegalStateException(
-                    "Gemini request was interrupted",
-                    e
-            );
+                    "Gemini request was interrupted", e);
 
         } catch (IOException e) {
 
             throw new IllegalStateException(
-                    "Could not call Gemini API",
-                    e
-            );
+                    "Could not call Gemini API", e);
         }
     }
 
     private String extractResponse(String responseBody) {
 
         try {
+
             JsonNode root =
                     objectMapper.readTree(responseBody);
 
@@ -170,8 +216,7 @@ public class GeminiChatService {
                     candidates.isEmpty()) {
 
                 throw new IllegalStateException(
-                        "Gemini returned no candidates"
-                );
+                        "Gemini returned no candidates");
             }
 
             return candidates.get(0)
@@ -184,9 +229,7 @@ public class GeminiChatService {
         } catch (IOException | RuntimeException e) {
 
             throw new IllegalStateException(
-                    "Could not parse Gemini response",
-                    e
-            );
+                    "Could not parse Gemini response", e);
         }
     }
 }

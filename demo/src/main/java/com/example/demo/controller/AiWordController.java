@@ -8,7 +8,15 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.dto.ChatRequest;
 import com.example.demo.service.GeminiChatService;
+
 import java.util.Map;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
 
 @CrossOrigin(origins = {
         "http://localhost:4200",
@@ -40,14 +48,23 @@ public class AiWordController {
         return ResponseEntity.ok("UP");
     }
 
-    @PostMapping("/chat")
+    @PostMapping(value = "/chat", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, String>> chat(
-            @RequestBody ChatRequest request) {
+            @RequestParam("message") String message,
+            @RequestParam("language") String language,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images) {
 
-        String response = geminiChatService.chat(request);
+        System.out.println("Message: " + message);
+        System.out.println("Language: " + language);
+        System.out.println("Images received: " +
+                (images == null ? 0 : images.size()));
 
-        return ResponseEntity.ok(
-                Map.of("response", response)
-        );
+        ChatRequest request = new ChatRequest();
+        request.setMessage(message);
+        request.setLanguage(language);
+
+        String response = geminiChatService.chat(request, images);
+
+        return ResponseEntity.ok(Map.of("response", response));
     }
 }

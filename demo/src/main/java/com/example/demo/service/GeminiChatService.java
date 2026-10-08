@@ -151,6 +151,13 @@ public class GeminiChatService {
                                     "parts",
                                     parts
                             )
+                    ),
+                    "generationConfig",
+                    Map.of(
+                            "thinkingConfig",
+                            Map.of(
+                                    "thinkingLevel", "minimal"
+                            )
                     )
             );
 
